@@ -52,6 +52,7 @@ def get_parking_floor():
     """Send the data to the frontend."""
     list_data = []
     for i in parking_floor.find({}, {"_id": False}):
+        i["remaining_parking"] = len(list(parking_id.find({"status": False, "floor": i["floor"]}, {"_id": False}))) - i["running_count"]
         list_data.append(i)
     return {"floors": list_data}
 

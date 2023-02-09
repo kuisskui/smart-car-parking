@@ -85,6 +85,3 @@ void Send_Check(int floor, bool IN) {
   }
 }
 
-void test_bounce2() {
-
-}

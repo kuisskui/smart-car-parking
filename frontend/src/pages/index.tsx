@@ -1,36 +1,8 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import Link from "next/link";
-
-const empty = [
-  [2, 2],
-  [3, 2],
-  [4, 2],
-  [5, 2],
-  [6, 2],
-  [7, 2],
-  [2, 3],
-  [2, 4],
-  [2, 5],
-  [3, 5],
-  [4, 5],
-  [5, 5],
-  [6, 5],
-  [7, 5],
-  [1, 1],
-  [1, 6],
-];
-
-const checkMarkEmpty = (row: number, col: number) => {
-  if (
-    empty.filter((item) => {
-      return item[0] === row && item[1] === col;
-    }).length > 0
-  ) {
-    return true;
-  }
-  return false;
-};
+import FloorSelection from "../components/FloorSelection";
+import ParkingMap from "../components/ParkingMap";
+import ParkingStatus from "../components/ParkingStatus";
 
 const Home: NextPage = () => {
   return (
@@ -42,48 +14,13 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex min-h-screen flex-row">
         {/* floor selection */}
-        <div className=" flex h-screen w-72 flex-col items-center border-2 border-red-500 ">
-          <h1 className="w-full border-2 border-red-600 p-8 text-4xl font-bold ">
-            Select floor
-          </h1>
-          <div className="mt-4 flex flex-col items-center justify-center gap-2">
-            {[1, 2, 3, 4, 5, 6].map((floor) => (
-              <Link
-                href="#"
-                key={floor}
-                className="btn-primary btn-square btn "
-              >
-                {floor}
-              </Link>
-            ))}
-          </div>
-        </div>
+        <FloorSelection />
 
         <div className="flex h-screen w-full flex-col justify-between">
           {/* parking map  */}
-          <div className="flex h-full w-full flex-col justify-between p-10">
-            {[1, 2, 3, 4, 5, 6].map((row) => {
-              return (
-                <div className="flex flex-row justify-between gap-2" key={row}>
-                  {[1, 2, 3, 4, 5, 6].map((col) => {
-                    if (checkMarkEmpty(row, col)) {
-                      return <div className="w-20" key={col}></div>;
-                    }
-                    return (
-                      <div className=" btn w-20 text-5xl" key={col}>
-                        🚗
-                      </div>
-                    );
-                  })}
-                </div>
-              );
-            })}
-          </div>
+          <ParkingMap />
           {/* parking text status */}
-          <div className="flex w-full flex-row justify-evenly p-5">
-            <h1 className="text-5xl"> ที่จอดรถว่าง 5 คัน </h1>
-            <h1 className="text-5xl"> รถขับวนอยู่ 2 คัน </h1>
-          </div>
+          <ParkingStatus />
         </div>
       </main>
     </>

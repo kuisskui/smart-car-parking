@@ -3,15 +3,29 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
+#define LDR_IN     13;
+#define LDR_OUT    2;
+#define SENSOR_1   32;
+#define SENSOR_2   39;
+#define LED_1      34;
+#define LED_2      36;
+
+
 //ID 1, 2
 //Floor 1
 
+Bounce debouncer1 = Bounce(); 
+Bounce debouncer2 = Bounce(); 
 
 const char *ssid = "Qwerty";
 const char *password = "12345678";
 
 const String Send_Park_url = "";
 const String Send_Check_url = "";
+
+void Send_Park(int id, int floor, bool Status);
+void Send_Check(int floor, bool IN);
+
 
 void Connect_Wifi();
 
@@ -69,4 +83,8 @@ void Send_Check(int floor, bool IN) {
     Serial.print("Error code: ");
     Serial.println(httpResponseCode);
   }
+}
+
+void test_bounce2() {
+
 }

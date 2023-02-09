@@ -17,37 +17,88 @@ const empty = [
   [1, 6],
 ];
 
-const checkMarkEmpty = (row: number, col: number) => {
-  if (
-    empty.filter((item) => {
-      return item[0] === row && item[1] === col;
-    }).length > 0
-  ) {
-    return true;
+type Parking = {
+  id: string;
+  floor: string;
+  status: boolean;
+};
+
+// const checkMarkEmpty = (row: number, col: number) => {
+//   if (
+//     empty.filter((item) => {
+//       return item[0] === row && item[1] === col;
+//     }).length > 0
+//   ) {
+//     return true;
+//   }
+//   return false;
+// };
+
+const genMockData = () => {
+  const mockData: Array<Parking | undefined> = [];
+
+  for (let i = 1; i <= 22; i++) {
+    mockData.push({
+      id: i.toString(),
+      floor: "1",
+      status: Math.random() >= 0.5,
+    });
   }
-  return false;
+
+  return mockData;
 };
 
 const ParkingMap = () => {
+  const data = genMockData();
+
+  data.splice(0, 0, undefined);
+  data.splice(5, 0, undefined);
+  data.splice(7, 0, undefined, undefined, undefined, undefined);
+  data.splice(13, 0, undefined);
+  data.splice(16, 0, undefined);
+  data.splice(19, 0, undefined);
+  data.splice(22, 0, undefined);
+  data.splice(25, 0, undefined);
+  data.splice(28, 0, undefined);
+  data.splice(31, 0, undefined);
+  data.splice(34, 0, undefined);
+  console.log(data);
   return (
-    <div className="flex h-full w-full flex-col justify-between p-10">
-      {[1, 2, 3, 4, 5, 6].map((row) => {
-        return (
-          <div className="flex flex-row justify-between gap-2" key={row}>
-            {[1, 2, 3, 4, 5, 6].map((col) => {
-              if (checkMarkEmpty(row, col)) {
-                return <div className="w-[17%]" key={col}></div>;
-              }
-              return (
-                <div className=" btn w-[17%] text-5xl" key={col}>
-                  🚗
+    <>
+      <div className="collapse">
+        <input type="checkbox" />
+        <div className="collapse-title text-xl font-medium">mock data</div>
+        <div className="collapse-content overflow-scroll">
+          <pre>{JSON.stringify(data, null, 2)}</pre>
+        </div>
+      </div>
+
+      <div className="flex h-full w-full flex-row flex-wrap justify-between ">
+        {data.map((item, index) => {
+          if (!item) {
+            return <div className="h-20 w-[16%]" key={index}></div>;
+          }
+          return (
+            <div
+              className="h-20 w-[16%] overflow-hidden border-2 border-red-500"
+              key={item.id}
+            >
+              {item.status ? (
+                <div className="flex flex-col items-center justify-center">
+                  <div className="h-10 w-10 rounded-full bg-green-500"></div>
+                  <div className="text-xs">{item.id}</div>
                 </div>
-              );
-            })}
-          </div>
-        );
-      })}
-    </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center">
+                  <div className="h-10 w-10 rounded-full bg-red-500"></div>
+                  <div className="text-xs">{item.id}</div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+    </>
   );
 };
 

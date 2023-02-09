@@ -48,6 +48,7 @@ const genMockData = () => {
   return mockData;
 };
 
+
 const ParkingMap = () => {
   const data = genMockData();
 
@@ -73,25 +74,33 @@ const ParkingMap = () => {
         </div>
       </div>
 
-      <div className="flex h-full w-full flex-row flex-wrap justify-between ">
+      <div className="flex h-full w-full flex-row flex-wrap gap-2 justify-between ">
         {data.map((item, index) => {
           if (!item) {
             return <div className="h-20 w-[16%]" key={index}></div>;
           }
+          const degree = (index%6<3)?0:180;
           return (
             <div
-              className="h-20 w-[16%] overflow-hidden border-2 border-red-500"
+              className=" w-[16%] overflow-hidden"
               key={item.id}
             >
               {item.status ? (
-                <div className="flex flex-col items-center justify-center">
-                  <div className="h-10 w-10 rounded-full bg-green-500"></div>
-                  <div className="text-xs">{item.id}</div>
+        
+                <div style={{
+                  boxShadow: "0px 0px 100px 0px rgba(255, 76, 48,1) inset",
+                  borderRadius: "10%",
+                }}
+                 className=" w-full h-full text-5xl flex justify-center items-center " key={item.id}>
+                  <img  src="/car.png" alt="" className={`rotate-${degree} w-[90%]`} />
                 </div>
               ) : (
-                <div className="flex flex-col items-center justify-center">
-                  <div className="h-10 w-10 rounded-full bg-red-500"></div>
-                  <div className="text-xs">{item.id}</div>
+                <div style={{
+                  boxShadow: "0px 0px 100px 0px rgba(178,222,39,1) inset",
+                  borderRadius: "10%",
+                }}
+                className=" w-full h-full  text-5xl flex justify-center items-center " key={item.id}>
+                  <img  src="/car.png" alt="" className="w-[90%] opacity-0 " />
                 </div>
               )}
             </div>

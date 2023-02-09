@@ -1,10 +1,14 @@
 import { type NextPage } from "next";
 import Head from "next/head";
+import { useState } from "react";
 import FloorSelection from "../components/FloorSelection";
 import ParkingMap from "../components/ParkingMap";
 import ParkingStatus from "../components/ParkingStatus";
+import { carParkingsMock } from "../mock/carParkingsMock";
 
 const Home: NextPage = () => {
+  const [floor, setFloor] = useState(1);
+
   return (
     <>
       <Head>
@@ -14,13 +18,24 @@ const Home: NextPage = () => {
       </Head>
       <main className="flex min-h-screen flex-row">
         {/* floor selection */}
-        <FloorSelection />
+        <FloorSelection floor={floor} setFloor={setFloor} />
 
         <div className="flex h-screen w-full flex-col justify-between">
           {/* parking map  */}
-          <ParkingMap />
+          <ParkingMap
+            carParkings={carParkingsMock.filter(
+              (lot) => lot.floor === floor.toString()
+            )}
+          />
           {/* parking text status */}
-          <ParkingStatus />
+          <ParkingStatus
+            carParkingRemain={
+              carParkingsMock.filter(
+                (lot) => lot.floor === floor.toString() && lot.status === false
+              ).length
+            }
+            carRunning={7}
+          />
         </div>
       </main>
     </>

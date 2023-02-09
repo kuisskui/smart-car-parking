@@ -1,9 +1,13 @@
-import { useState } from "react";
+import type { Dispatch, SetStateAction } from "react";
 
-const FloorSelection = () => {
-  const [floor, setFloor] = useState(1);
+type FloorSelectionProps = {
+  floor: number;
+  setFloor: Dispatch<SetStateAction<number>>;
+};
+
+const FloorSelection: React.FC<FloorSelectionProps> = ({ floor, setFloor }) => {
   return (
-    <div className=" flex h-screen w-80 flex-col items-center border-2 border-black ">
+    <div className=" flex h-screen w-80 flex-col items-center border-r-2 border-black ">
       <h1 className="w-full  p-8 text-center text-3xl font-bold">
         Floor {floor}
       </h1>

@@ -24,12 +24,12 @@ app.add_middleware(
 )
 
 
-@app.get("/")
+@app.get("/", status_code=200)
 def root():
     return {"msg": "smart-car-parking"}
 
 
-@app.get("/get-parking-id/")
+@app.get("/get-parking-id/", status_code=200)
 def get_parking_id():
     """Send the data to the frontend."""
     list_data = []
@@ -38,14 +38,14 @@ def get_parking_id():
     return {"cars": list_data}
 
 
-@app.post("/record-parking-id/")
+@app.post("/record-parking-id/", status_code=200)
 def record_parking_id(parking: Parking):
     """Record the data when hardware send."""
     parking_id.update_one({"id": parking.id, "floor": parking.floor}, {
                           "$set": {"status": parking.status}})
 
 
-@app.get("/get-parking-floor/")
+@app.get("/get-parking-floor/", status_code=200)
 def get_parking_floor():
     """Send the data to the frontend."""
     list_data = []
@@ -56,9 +56,12 @@ def get_parking_floor():
     return {"floors": list_data}
 
 
-@app.post("/record-parking-floor/")
+@app.post("/record-parking-floor/", status_code=200)
 def record_parking_floor(floor: str = Body(), running_change: int = Body()):
     """Record the data when hardware send."""
+    ls = [0, 1, -1]
+    if running_change not in ls:
+        raise HTTPException(400, "Running change should be 0, 1, -1")
     old_running_count = parking_floor.find_one({"floor": floor})[
         "running_count"]
     if running_change + old_running_count < 0:

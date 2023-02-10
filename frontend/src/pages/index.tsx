@@ -1,13 +1,46 @@
 import { type NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import FloorSelection from "../components/FloorSelection";
 import ParkingMap from "../components/ParkingMap";
 import ParkingStatus from "../components/ParkingStatus";
-import { carParkingsMock } from "../mock/carParkingsMock";
+import { carParkingsMockEmpty } from "../mock/carParkingsMock";
+import type { CountData, ParkingArray } from "../types/car";
 
 const Home: NextPage = () => {
   const [floor, setFloor] = useState(1);
+  const [parkData, setParkData] = useState<ParkingArray>(carParkingsMockEmpty);
+  const [countData, setCountData] = useState<CountData[]>();
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      fetch("https://ecourse.cpe.ku.ac.th/exceed16/get-parking-id/")
+        .then((res) => res.json())
+        .then((data: { cars: ParkingArray }) => {
+          setParkData(data.cars);
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }, 1000);
+
+    const interval2 = setInterval(() => {
+      fetch("https://ecourse.cpe.ku.ac.th/exceed16/get-parking-floor/")
+        .then((res) => res.json())
+        .then((data: { floors: CountData[] }) => {
+          setCountData(data.floors);
+          console.log(data);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }, 1000);
+    return () => {
+      clearInterval(interval);
+      clearInterval(interval2);
+    };
+  }, []);
 
   return (
     <>
@@ -22,19 +55,22 @@ const Home: NextPage = () => {
 
         <div className="flex h-screen w-full flex-col justify-between">
           {/* parking map  */}
+
           <ParkingMap
-            carParkings={carParkingsMock.filter(
-              (lot) => lot.floor === floor.toString()
+            carParkings={parkData.filter(
+              (lot) => lot?.floor === floor.toString()
             )}
           />
           {/* parking text status */}
           <ParkingStatus
             carParkingRemain={
-              carParkingsMock.filter(
-                (lot) => lot.floor === floor.toString() && lot.status === false
-              ).length
+              countData?.find((item) => item.floor === floor.toString())
+                ?.remaining_parking || 0
             }
-            carRunning={7}
+            carRunning={
+              countData?.find((item) => item.floor === floor.toString())
+                ?.running_count || 0
+            }
           />
         </div>
       </main>

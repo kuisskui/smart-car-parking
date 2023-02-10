@@ -17,7 +17,7 @@ const ParkingLot: React.FC<ParkingLotProps> = ({ item, variant, rotate }) => {
         borderRadius: "10%",
       }}
       className=" flex h-full w-full items-center justify-center text-5xl "
-      key={item.id}
+      key={item.id + ":" + item.floor}
     >
       <Image
         alt="car"

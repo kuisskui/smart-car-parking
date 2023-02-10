@@ -5,3 +5,9 @@ export type Parking = {
 };
 
 export type ParkingArray = Array<Parking | undefined>;
+
+export type CountData = {
+  floor: string;
+  running_count: number;
+  remaining_parking: number;
+};

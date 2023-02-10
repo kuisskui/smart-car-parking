@@ -74,7 +74,7 @@ const Home: NextPage = () => {
           />
           {/* overlay banner show full */}
           {(countData?.find((item) => item.floor === floor.toString())
-            ?.remaining_parking || 1) === 0 && (
+            ?.remaining_parking ?? 1) === 0 && (
             <div className="absolute top-0 left-0 flex h-full w-full items-center justify-center bg-black bg-opacity-50">
               <div className="rounded-lg bg-white p-4 text-center">
                 <h1 className="text-8xl font-bold text-red-500">

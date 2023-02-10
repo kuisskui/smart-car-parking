@@ -168,7 +168,7 @@ void Check() {
     Check_Park(1);
     Check_Park(2);
     Check_inout();
-    vTaskDelay(1000);
+    vTaskDelay(100);
   }
 }
 

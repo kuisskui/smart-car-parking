@@ -61,7 +61,11 @@ def record_parking_floor(floor: str = Body(), running_change: int = Body()):
     """Record the data when hardware send."""
     old_running_count = parking_floor.find_one({"floor": floor})[
         "running_count"]
-    parking_floor.update_one({"floor": floor}, {
+    if running_change + old_running_count < 0:
+        parking_floor.update_one({"floor": floor}, {
+                             "$set": {"running_count": 0}})
+    else:
+        parking_floor.update_one({"floor": floor}, {
                              "$set": {"running_count": running_change + old_running_count}})
 
 

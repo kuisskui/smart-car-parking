@@ -64,8 +64,12 @@ def record_parking_floor(floor: str = Body(), running_change: int = Body()):
         raise HTTPException(400, "Running change should be 0, 1, -1")
     old_running_count = parking_floor.find_one({"floor": floor})[
         "running_count"]
-    parking_floor.update_one({"floor": floor}, {
-        "$set": {"running_count": running_change + old_running_count}})
+    if running_change + old_running_count < 0:
+        parking_floor.update_one({"floor": floor}, {
+                             "$set": {"running_count": 0}})
+    else:
+        parking_floor.update_one({"floor": floor}, {
+                             "$set": {"running_count": running_change + old_running_count}})
 
 
 if __name__ == "__main__":

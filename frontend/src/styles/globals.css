@@ -13,8 +13,8 @@
     display: block;
     width: 1.5vw;
     height: 1.5vw;
-    border-bottom: 5px solid rgba(82, 78, 183, 1);
-    border-right: 5px solid rgba(3, 138, 255,1);
+    border-bottom: 5px solid #4B6BFB;
+    border-right: 5px solid #3ABFF8;
     filter: drop-shadow(0 0 0.25rem black);
     transform: rotate(45deg);
     margin: -10px;
@@ -46,8 +46,8 @@
     display: block;
     width: 1.5vw;
     height: 1.5vw;
-    border-bottom: 5px solid rgba(82, 78, 183, 1);
-    border-right: 5px solid rgba(3, 138, 255,1);
+    border-bottom: 5px solid #4B6BFB;
+    border-right: 5px solid #3ABFF8;
     filter: drop-shadow(0 0 0.25rem black);
     transform: rotate(45deg);
     margin: -10px;

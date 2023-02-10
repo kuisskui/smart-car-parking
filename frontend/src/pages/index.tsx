@@ -64,8 +64,8 @@ const Home: NextPage = () => {
           {/* parking text status */}
           <ParkingStatus
             carParkingRemain={
-              countData?.find((item) => item.floor === floor.toString())
-                ?.remaining_parking || 0 <= 0
+              (countData?.find((item) => item.floor === floor.toString())
+                ?.remaining_parking || 0) <= 0
                 ? 0
                 : countData?.find((item) => item.floor === floor.toString())
                     ?.remaining_parking || 0

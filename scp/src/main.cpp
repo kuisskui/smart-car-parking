@@ -3,8 +3,8 @@
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
-#define LDR_IN     13
-#define LDR_OUT    2
+#define LDR_IN     14
+#define LDR_OUT    0
 #define SENSOR_1   32
 #define SENSOR_2   39
 #define LED_1      34
@@ -30,11 +30,11 @@ TaskHandle_t Sending = NULL;
 int globalID;
 bool globalState;
 
-const char *ssid = "Qwerty";
+const char *ssid = "Will";
 const char *password = "12345678";
 
-const String Send_Park_url = "";
-const String Send_Check_url = "";
+const String Send_Park_url = "https://ecourse.cpe.ku.ac.th/exceed16/record-parking-id/";
+const String Send_Check_url = "https://ecourse.cpe.ku.ac.th/exceed16/record-parking-floor/";
 
 int isObstacle = HIGH;
 
@@ -43,25 +43,15 @@ void Send_Park(int id, int floor, bool Status);
 void Send_Check(int floor, bool IN);
 void Send(void *param);
 void Check(void *param);
-
-
 void Connect_Wifi();
 
 void setup() {
   Serial.begin(115200);
   Connect_Wifi();
-  xTaskCreatePinnedToCore(Check, "Checking", 10000, NULL, 1, &Checking, 0);
+  xTaskCreatePinnedToCore(Check, "Checking", 100000, NULL, 1, &Checking, 0);
 }
 
 void loop() {
-}
-
-void Check(void *param) {
-  while (true) {
-    Check_Park(1);
-    Check_Park(2);
-    vTaskDelay(1000);
-  }
 }
 
 void Check_Park(int id) {
@@ -69,6 +59,7 @@ void Check_Park(int id) {
   id--;
   int sensor = AllSensor[id];
   bool status = analogRead(sensor) < dark;
+  Serial.println(analogRead(sensor));
   //status mean isDark
   if (status && !currentStatus[id] && changeStatus[id] < 10) {
     changeStatus[id]++;
@@ -88,25 +79,10 @@ void Check_Park(int id) {
     currentStatus[id] = !currentStatus[id];
     globalID = id + 1;
     globalState = (!currentStatus[id] && changeStatus[id] == 10);
-    xTaskCreatePinnedToCore(Send, "Sending", 10000, NULL, 1, &Sending, 1);
+    xTaskCreatePinnedToCore(Send, "Sending", 100000, NULL, 1, &Sending, 1);
   }
 }
 
-void Send(void *param) {
-  Send_Park(globalID, currentFloor, globalState);
-  Send_Check(currentFloor, !globalState);
-}
-
-void Connect_Wifi() {
-  WiFi.begin(ssid, password);
-  Serial.print("Connecting to WiFi");
-  while (WiFi.status() != WL_CONNECTED) {
-      delay(500);
-      Serial.print(".");
-  }
-  Serial.print("OK! IP=");
-  Serial.println(WiFi.localIP());
-}
 
 void Send_Park(int id, int currentFloor, bool Status) {
   //Status = true มีรถจอด
@@ -145,3 +121,29 @@ void Send_Check(int floor, bool IN) {
   }
 }
 
+void Check(void *param) {
+  int count = 1;
+  while (true) {
+    Serial.print("Checkcount: ");
+    Serial.println(count++);
+    Check_Park(1);
+    Check_Park(2);
+    vTaskDelay(1000);
+  }
+}
+
+void Send(void *param) {
+  Send_Park(globalID, currentFloor, globalState);
+  Send_Check(currentFloor, !globalState);
+}
+
+void Connect_Wifi() {
+  WiFi.begin(ssid, password);
+  Serial.print("Connecting to WiFi");
+  while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+      Serial.print(".");
+  }
+  Serial.print("OK! IP=");
+  Serial.println(WiFi.localIP());
+}

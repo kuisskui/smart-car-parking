@@ -10,6 +10,8 @@
 #define LED_1      34
 #define LED_2      36
 
+//can't use 13 12 4 2 
+
 const int dark = 2000;
 
 //ID 1, 2

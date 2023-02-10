@@ -7,9 +7,6 @@
 #define LDR_OUT    27
 #define SENSOR_1   32
 #define SENSOR_2   39
-#define LED_1      34
-#define LED_2      36
-
 //can't use 13 12 4 2 
 
 const int dark = 2000;
@@ -21,7 +18,6 @@ const int dark = 2000;
 bool currentStatus[2] = {false, false};
 int changeStatus[2] = {0, 0};
 int AllSensor[2] = {SENSOR_1, SENSOR_2};
-int AllLED[2] = {LED_1, LED_2};
 int AID[2] = {1, 2};
 
 int currentFloor = 1;
@@ -35,7 +31,7 @@ TaskHandle_t Sending = NULL;
 int globalID;
 bool globalState;
 
-const char *ssid = "Mj";
+const char *ssid = "Qwerty";
 const char *password = "12345678";
 
 const String Send_Park_url = "https://ecourse.cpe.ku.ac.th/exceed16/record-parking-id/";
@@ -58,8 +54,6 @@ void setup() {
   pinMode(LDR_OUT, INPUT);
   pinMode(SENSOR_1, INPUT);
   pinMode(SENSOR_2, INPUT);
-  pinMode(LED_1, OUTPUT);
-  pinMode(LED_2, OUTPUT);
 
   debouncer1.attach(LDR_IN);
   debouncer1.interval(5);
@@ -94,7 +88,6 @@ void Check_Park(int id) {
   if ((!currentStatus[id] && changeStatus[id] == 100) || (currentStatus[id] && changeStatus[id] == 0)) {
     //switch state
     globalState = (!currentStatus[id] && changeStatus[id] == 100);
-    digitalWrite(AllLED[id], globalState);
     globalID = id + 1;
     currentStatus[id] = !currentStatus[id];
     Send();

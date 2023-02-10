@@ -4,7 +4,7 @@
 #include <ArduinoJson.h>
 
 #define LDR_IN     14
-#define LDR_OUT    0
+#define LDR_OUT    27
 #define SENSOR_1   32
 #define SENSOR_2   39
 #define LED_1      34

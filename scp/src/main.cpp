@@ -17,9 +17,11 @@ const int dark = 2000;
 //ID 1, 2
 //Floor 1
 
+
 bool currentStatus[2] = {false, false};
 int changeStatus[2] = {0, 0};
 int AllSensor[2] = {SENSOR_1, SENSOR_2};
+int AllLED[2] = {LED_1, LED_2};
 
 int currentFloor = 1;
 
@@ -32,70 +34,87 @@ TaskHandle_t Sending = NULL;
 int globalID;
 bool globalState;
 
-const char *ssid = "Will";
+const char *ssid = "Mj";
 const char *password = "12345678";
 
 const String Send_Park_url = "https://ecourse.cpe.ku.ac.th/exceed16/record-parking-id/";
 const String Send_Check_url = "https://ecourse.cpe.ku.ac.th/exceed16/record-parking-floor/";
 
-int isObstacle = HIGH;
-
 
 void Send_Park(int id, int floor, bool Status);
 void Send_Check(int floor, bool IN);
-void Send(void *param);
-void Check(void *param);
+void Send();
+void Check();
 void Connect_Wifi();
 
 void setup() {
   Serial.begin(115200);
   Connect_Wifi();
-  xTaskCreatePinnedToCore(Check, "Checking", 100000, NULL, 1, &Checking, 0);
+
+  Send_Park(1, 1, false);
+  Send_Park(2, 1, false);
+  pinMode(LDR_IN, INPUT);
+  pinMode(LDR_OUT, INPUT);
+  pinMode(SENSOR_1, INPUT);
+  pinMode(SENSOR_2, INPUT);
+  pinMode(LED_1, OUTPUT);
+  pinMode(LED_2, OUTPUT);
+
+  debouncer1.attach(LDR_IN);
+  debouncer1.interval(5);
+  debouncer2.attach(LDR_OUT);
+  debouncer2.interval(5);
+  //xTaskCreatePinnedToCore(Check, "Checking", 10000, NULL, 1, &Checking, 0);
 }
 
 void loop() {
+  Check();
+  delay(1000);
 }
 
 void Check_Park(int id) {
   //id = 1, 2
   id--;
   int sensor = AllSensor[id];
-  bool status = analogRead(sensor) < dark;
-  Serial.println(analogRead(sensor));
+  bool isDark = analogRead(sensor) < dark;
   //status mean isDark
-  if (status && !currentStatus[id] && changeStatus[id] < 10) {
+  if (isDark && !currentStatus[id] && changeStatus[id] < 10) {
     changeStatus[id]++;
   }
-  else if (!status && !currentStatus[id]) {
+  else if (!isDark && !currentStatus[id]) {
     changeStatus[id] = 0;
   }
-  else if (status && currentStatus[id]) {
+  else if (isDark && currentStatus[id]) {
     changeStatus[id] = 10;
   }
-  else if (!status && currentStatus[id] && changeStatus[id] > 0) {
+  else if (!isDark && currentStatus[id] && changeStatus[id] > 0) {
     changeStatus[id]--;
   }
   //check if need to send http
   if ((!currentStatus[id] && changeStatus[id] == 10) || (currentStatus[id] && changeStatus[id] == 0)) {
     //switch state
-    currentStatus[id] = !currentStatus[id];
-    globalID = id + 1;
     globalState = (!currentStatus[id] && changeStatus[id] == 10);
-    xTaskCreatePinnedToCore(Send, "Sending", 100000, NULL, 1, &Sending, 1);
+    digitalWrite(AllLED[id], globalState);
+    globalID = id + 1;
+    currentStatus[id] = !currentStatus[id];
+    Send();
+    //xTaskCreatePinnedToCore(Send, "Sending", 100000, NULL, 1, &Sending, 0);
   }
 }
 
 
 void Send_Park(int id, int currentFloor, bool Status) {
-  //Status = true มีรถจอด
-  //Status = false ไม่มีรถจอด
+  String json;
   HTTPClient http;
   DynamicJsonDocument doc(512);
   doc["id"] = id;
   doc["floor"] = currentFloor;
   doc["status"] = Status;
+  serializeJson(doc, json);
   http.begin(Send_Park_url);
-  int httpResponseCode = http.GET();
+  http.addHeader("Content-Type","application/json");
+  Serial.println(json);
+  int httpResponseCode = http.POST(json);
   if (httpResponseCode >= 200 && httpResponseCode < 300) {
     Serial.println("Done!!");
     }
@@ -106,14 +125,18 @@ void Send_Park(int id, int currentFloor, bool Status) {
 }
 
 void Send_Check(int floor, bool IN) {
-  //IN = true รถเข้า
-  //IN = false รถออก
+  String json;
   HTTPClient http;
   DynamicJsonDocument doc(512);
   doc["floor"] = floor;
-  doc["running_count"] = IN ? 1 : -1;
+  doc["running_change"] = IN ? 1 : -1;
+  serializeJson(doc, json);
   http.begin(Send_Check_url);
-  int httpResponseCode = http.GET();
+  http.addHeader("Content-Type","application/json");
+  Serial.println(json);
+
+  int httpResponseCode = http.POST(json);
+
   if (httpResponseCode >= 200 && httpResponseCode < 300) {
     Serial.println("Done!!");
     }
@@ -123,9 +146,9 @@ void Send_Check(int floor, bool IN) {
   }
 }
 
-void Check(void *param) {
+void Check() {
   int count = 1;
-  while (true) {
+  while (1) {
     Serial.print("Checkcount: ");
     Serial.println(count++);
     Check_Park(1);
@@ -134,9 +157,12 @@ void Check(void *param) {
   }
 }
 
-void Send(void *param) {
+void Send() {
+  Serial.print("Send: ");
+  Serial.println(globalID);
   Send_Park(globalID, currentFloor, globalState);
   Send_Check(currentFloor, !globalState);
+  //vTaskDelete(Sending);
 }
 
 void Connect_Wifi() {

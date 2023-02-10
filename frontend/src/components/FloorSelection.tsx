@@ -7,7 +7,7 @@ type FloorSelectionProps = {
 
 const FloorSelection: React.FC<FloorSelectionProps> = ({ floor, setFloor }) => {
   return (
-    <div className=" flex h-screen w-80 flex-col items-center border-r-2 border-black ">
+    <div className=" flex h-screen w-80 flex-col items-center bg-base-300  ">
       <h1 className="w-full  p-8 text-center text-3xl font-bold">
         Floor {floor}
       </h1>
@@ -15,7 +15,7 @@ const FloorSelection: React.FC<FloorSelectionProps> = ({ floor, setFloor }) => {
         {[1, 2, 3].map((floor) => (
           <button
             key={floor}
-            className="btn-primary btn w-40 "
+            className="bg-blue-600 btn w-40 "
             onClick={() => {
               setFloor(floor);
             }}

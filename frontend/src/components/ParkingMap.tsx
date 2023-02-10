@@ -12,7 +12,7 @@ const ParkingMap: React.FC<ParkingMapProps> = ({ carParkings }) => {
 
   return (
     <>
-      <div className="flex h-full w-full flex-row flex-wrap justify-between gap-y-2 p-2">
+      <div className="flex h-full w-full flex-row flex-wrap justify-between gap-y-2 p-2 ">
         {data.map((item, index) => {
           if (!item) {
             const turnRight =[7]

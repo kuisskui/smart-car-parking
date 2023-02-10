@@ -146,6 +146,20 @@ void Send_Check(int floor, bool IN) {
   }
 }
 
+void Check_inout(){
+  debouncer1.update();
+  debouncer2.update();
+  
+  if (debouncer1.rose() && debouncer2.rose()){
+  }
+  else if (debouncer1.rose()){
+    Send_Check(1, true);
+  }
+  else if (debouncer2.rose()){
+    Send_Check(1, false);
+  }
+}
+
 void Check() {
   int count = 1;
   while (1) {
@@ -153,6 +167,7 @@ void Check() {
     Serial.println(count++);
     Check_Park(1);
     Check_Park(2);
+    Check_inout();
     vTaskDelay(100);
   }
 }

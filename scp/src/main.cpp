@@ -22,6 +22,7 @@ bool currentStatus[2] = {false, false};
 int changeStatus[2] = {0, 0};
 int AllSensor[2] = {SENSOR_1, SENSOR_2};
 int AllLED[2] = {LED_1, LED_2};
+int AID[2] = {1, 2};
 
 int currentFloor = 1;
 
@@ -69,7 +70,6 @@ void setup() {
 
 void loop() {
   Check();
-  delay(1000);
 }
 
 void Check_Park(int id) {
@@ -78,22 +78,22 @@ void Check_Park(int id) {
   int sensor = AllSensor[id];
   bool isDark = analogRead(sensor) < dark;
   //status mean isDark
-  if (isDark && !currentStatus[id] && changeStatus[id] < 10) {
+  if (isDark && !currentStatus[id] && changeStatus[id] < 100) {
     changeStatus[id]++;
   }
   else if (!isDark && !currentStatus[id]) {
     changeStatus[id] = 0;
   }
   else if (isDark && currentStatus[id]) {
-    changeStatus[id] = 10;
+    changeStatus[id] = 100;
   }
   else if (!isDark && currentStatus[id] && changeStatus[id] > 0) {
     changeStatus[id]--;
   }
   //check if need to send http
-  if ((!currentStatus[id] && changeStatus[id] == 10) || (currentStatus[id] && changeStatus[id] == 0)) {
+  if ((!currentStatus[id] && changeStatus[id] == 100) || (currentStatus[id] && changeStatus[id] == 0)) {
     //switch state
-    globalState = (!currentStatus[id] && changeStatus[id] == 10);
+    globalState = (!currentStatus[id] && changeStatus[id] == 100);
     digitalWrite(AllLED[id], globalState);
     globalID = id + 1;
     currentStatus[id] = !currentStatus[id];
@@ -107,7 +107,7 @@ void Send_Park(int id, int currentFloor, bool Status) {
   String json;
   HTTPClient http;
   DynamicJsonDocument doc(512);
-  doc["id"] = id;
+  doc["id"] = AID[id - 1];
   doc["floor"] = currentFloor;
   doc["status"] = Status;
   serializeJson(doc, json);
@@ -153,7 +153,7 @@ void Check() {
     Serial.println(count++);
     Check_Park(1);
     Check_Park(2);
-    vTaskDelay(1000);
+    vTaskDelay(100);
   }
 }
 

@@ -58,7 +58,7 @@ def get_parking_floor():
     list_data = []
     for i in parking_floor.find({}, {"_id": False}):
         i["remaining_parking"] = len(list(parking_id.find(
-            {"status": False, "floor": i["floor"]}, {"_id": False}))) - i["running_count"]
+            {"floor": i["floor"]}, {"_id": False}))) - i["running_count"]
         if i["remaining_parking"] < 0:
             i["remaining_parking"] = 0
         list_data.append(i)

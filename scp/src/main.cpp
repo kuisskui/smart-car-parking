@@ -25,8 +25,8 @@ int currentFloor = 1;
 Bounce debouncer1 = Bounce(); 
 Bounce debouncer2 = Bounce();
 
-TaskHandle_t Checking = NULL;
-TaskHandle_t Sending = NULL;
+TaskHandle_t TPark = NULL;
+TaskHandle_t TCheck = NULL;
 
 int globalID;
 bool globalState;
@@ -41,7 +41,8 @@ const String Send_Check_url = "https://ecourse.cpe.ku.ac.th/exceed16/record-park
 void Send_Park(int id, int floor, bool Status);
 void Send_Check(int floor, bool IN);
 void Send();
-void Check();
+void Park(void *param);
+void Check(void *param);
 void Connect_Wifi();
 
 void setup() {
@@ -59,11 +60,11 @@ void setup() {
   debouncer1.interval(5);
   debouncer2.attach(LDR_OUT);
   debouncer2.interval(5);
-  //xTaskCreatePinnedToCore(Check, "Checking", 10000, NULL, 1, &Checking, 0);
+  xTaskCreatePinnedToCore(Park, "Park", 10000, NULL, 1, &TPark, 0);
+  xTaskCreatePinnedToCore(Check, "Check", 10000, NULL, 1, &TCheck, 1);
 }
 
 void loop() {
-  Check();
 }
 
 void Check_Park(int id) {
@@ -72,22 +73,22 @@ void Check_Park(int id) {
   int sensor = AllSensor[id];
   bool isDark = analogRead(sensor) < dark;
   //status mean isDark
-  if (isDark && !currentStatus[id] && changeStatus[id] < 100) {
+  if (isDark && !currentStatus[id] && changeStatus[id] < 50) {
     changeStatus[id]++;
   }
   else if (!isDark && !currentStatus[id]) {
     changeStatus[id] = 0;
   }
   else if (isDark && currentStatus[id]) {
-    changeStatus[id] = 100;
+    changeStatus[id] = 50;
   }
   else if (!isDark && currentStatus[id] && changeStatus[id] > 0) {
     changeStatus[id]--;
   }
   //check if need to send http
-  if ((!currentStatus[id] && changeStatus[id] == 100) || (currentStatus[id] && changeStatus[id] == 0)) {
+  if ((!currentStatus[id] && changeStatus[id] == 50) || (currentStatus[id] && changeStatus[id] == 0)) {
     //switch state
-    globalState = (!currentStatus[id] && changeStatus[id] == 100);
+    globalState = (!currentStatus[id] && changeStatus[id] == 50);
     globalID = id + 1;
     currentStatus[id] = !currentStatus[id];
     Send();
@@ -142,7 +143,6 @@ void Send_Check(int floor, bool IN) {
 void Check_inout(){
   debouncer1.update();
   debouncer2.update();
-  
   if (debouncer1.rose() && debouncer2.rose()){
   }
   else if (debouncer1.rose()){
@@ -153,15 +153,17 @@ void Check_inout(){
   }
 }
 
-void Check() {
-  int count = 1;
+void Park(void *param) {
   while (1) {
-    Serial.print("Checkcount: ");
-    Serial.println(count++);
     Check_Park(1);
     Check_Park(2);
-    Check_inout();
     vTaskDelay(100);
+  }
+}
+
+void Check(void *param) {
+  while (1) {
+    Check_inout();
   }
 }
 
@@ -169,7 +171,8 @@ void Send() {
   Serial.print("Send: ");
   Serial.println(globalID);
   Send_Park(globalID, currentFloor, globalState);
-  Send_Check(currentFloor, !globalState);
+  //Send_Check(currentFloor, !globalState);
+  
   //vTaskDelete(Sending);
 }
 

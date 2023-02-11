@@ -72,10 +72,7 @@ const Home: NextPage = () => {
             }
             carRunning={
               countData?.find((item) => item.floor === floor.toString())
-                ?.running_count || 0 <= 0
-                ? 0
-                : countData?.find((item) => item.floor === floor.toString())
-                    ?.running_count || 0
+                ?.running_count || 0
             }
           />
           {/* overlay banner show full */}

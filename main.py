@@ -43,6 +43,13 @@ def record_parking_id(parking: Parking):
     """Record the data when hardware send."""
     parking_id.update_one({"id": parking.id, "floor": parking.floor}, {
                           "$set": {"status": parking.status}})
+    floor = parking_floor.find_one({"floor": parking.floor})["running_count"]
+    if parking.status:
+        parking_floor.update_one({"floor": parking.floor}, {
+                                 "$set": {"running_count": floor-1}})
+    else:
+        parking_floor.update_one({"floor": parking.floor}, {
+                                 "$set": {"running_count": floor+1}})
 
 
 @app.get("/get-parking-floor/", status_code=200)
@@ -68,10 +75,10 @@ def record_parking_floor(floor: str = Body(), running_change: int = Body()):
         "running_count"]
     if running_change + old_running_count < 0:
         parking_floor.update_one({"floor": floor}, {
-                             "$set": {"running_count": 0}})
+            "$set": {"running_count": 0}})
     else:
         parking_floor.update_one({"floor": floor}, {
-                             "$set": {"running_count": running_change + old_running_count}})
+            "$set": {"running_count": running_change + old_running_count}})
 
 
 if __name__ == "__main__":

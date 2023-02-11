@@ -51,9 +51,9 @@ def record_parking_id(parking: Parking):
         parking_floor.update_one({"floor": parking.floor}, {
                                  "$set": {"running_count": floor+1}})
 
-    now_running_floor = parking_floor.find_one({"floor": parking_floor})
+    now_running_floor = parking_floor.find_one({"floor": parking.floor})["running_count"]
 
-    if now_running_floor["running_count"] < 0:
+    if now_running_floor < 0:
         parking_floor.update_one({"floor": parking.floor}, {
                                  "$set": {"running_count": 0}})
 

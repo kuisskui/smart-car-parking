@@ -18,7 +18,7 @@ const int dark = 2000;
 bool currentStatus[2] = {false, false};
 int changeStatus[2] = {0, 0};
 int AllSensor[2] = {SENSOR_1, SENSOR_2};
-int AID[2] = {1, 2};
+int AID[2] = {5, 13};
 
 int currentFloor = 1;
 
@@ -73,22 +73,22 @@ void Check_Park(int id) {
   int sensor = AllSensor[id];
   bool isDark = analogRead(sensor) < dark;
   //status mean isDark
-  if (isDark && !currentStatus[id] && changeStatus[id] < 50) {
+  if (isDark && !currentStatus[id] && changeStatus[id] < 3) {
     changeStatus[id]++;
   }
   else if (!isDark && !currentStatus[id]) {
     changeStatus[id] = 0;
   }
   else if (isDark && currentStatus[id]) {
-    changeStatus[id] = 50;
+    changeStatus[id] = 3;
   }
   else if (!isDark && currentStatus[id] && changeStatus[id] > 0) {
-    changeStatus[id]--;
+    changeStatus[id] = 0;
   }
   //check if need to send http
-  if ((!currentStatus[id] && changeStatus[id] == 50) || (currentStatus[id] && changeStatus[id] == 0)) {
+  if ((!currentStatus[id] && changeStatus[id] == 3) || (currentStatus[id] && changeStatus[id] == 0)) {
     //switch state
-    globalState = (!currentStatus[id] && changeStatus[id] == 50);
+    globalState = (!currentStatus[id] && changeStatus[id] == 3);
     globalID = id + 1;
     currentStatus[id] = !currentStatus[id];
     Send();
@@ -157,13 +157,14 @@ void Park(void *param) {
   while (1) {
     Check_Park(1);
     Check_Park(2);
-    vTaskDelay(100);
+    vTaskDelay(1000);
   }
 }
 
 void Check(void *param) {
   while (1) {
     Check_inout();
+    vTaskDelay(100);
   }
 }
 
@@ -172,7 +173,7 @@ void Send() {
   Serial.println(globalID);
   Send_Park(globalID, currentFloor, globalState);
   //Send_Check(currentFloor, !globalState);
-  
+
   //vTaskDelete(Sending);
 }
 

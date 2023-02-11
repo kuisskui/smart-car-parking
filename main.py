@@ -51,13 +51,20 @@ def record_parking_id(parking: Parking):
         parking_floor.update_one({"floor": parking.floor}, {
                                  "$set": {"running_count": floor+1}})
 
+    now_running_floor = parking_floor.find_one({"floor": parking_floor})
+
+    if now_running_floor["running_count"] < 0:
+        parking_floor.update_one({"floor": parking.floor}, {
+                                 "$set": {"running_count": 0}})
+
 
 @app.get("/get-parking-floor/", status_code=200)
 def get_parking_floor():
     """Send the data to the frontend."""
     list_data = []
     for i in parking_floor.find({}, {"_id": False}):
-        i["remaining_parking"] = len(list(parking_id.find({"floor": i["floor"]}, {"_id": False}))) - i["running_count"] - len(list(parking_id.find({"status": True, "floor": i["floor"]}, {"_id": False})))
+        i["remaining_parking"] = len(list(parking_id.find({"floor": i["floor"]}, {"_id": False}))) - i["running_count"] - len(
+            list(parking_id.find({"status": True, "floor": i["floor"]}, {"_id": False})))
         if i["remaining_parking"] < 0:
             i["remaining_parking"] = 0
         list_data.append(i)

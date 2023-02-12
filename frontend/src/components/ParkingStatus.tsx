@@ -8,8 +8,8 @@ const ParkingStatus: React.FC<ParkingStatusProps> = ({
   carRunning,
 }) => {
   return (
-    <footer className="flex h-[128px] items-center justify-center bg-neutral  text-neutral-content">
-      <div className="flex w-full flex-row justify-evenly  ">
+    <footer className="flex h-[300px] items-center justify-center bg-neutral text-neutral-content  sm:h-[128px]">
+      <div className="flex w-full flex-col  justify-evenly sm:flex-row  ">
         <h1 className="text-5xl">
           ที่จอดรถว่าง
           <span className="px-4 text-error">{carParkingRemain}</span>คัน

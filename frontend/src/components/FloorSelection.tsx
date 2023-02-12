@@ -7,17 +7,17 @@ type FloorSelectionProps = {
 
 const FloorSelection: React.FC<FloorSelectionProps> = ({ floor, setFloor }) => {
   return (
-    <div className=" flex h-screen w-80 flex-col items-center bg-base-300  ">
+    <div className=" flex h-screen w-full items-center bg-base-300 sm:w-80 sm:flex-col  ">
       <h1 className="w-full  pt-5 text-center text-3xl font-bold ">
         Floor <span className="text-5xl text-primary">{floor}</span>
       </h1>
       <div className="divider" />
-      <div className="mt-4 flex flex-col items-center justify-center gap-2">
+      <div className="mt-4 flex items-center justify-center gap-2 p-5 sm:flex-col sm:p-0">
         {[1, 2, 3].map((f) => (
           <button
             key={f}
             className={
-              "btn w-40 " +
+              "btn w-[20%] sm:w-40 " +
               (f === floor ? "btn-primary " : "btn-ghost bg-base-100")
             }
             onClick={() => {
